@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>todoli</title>
+</head>
+
+<body>
+
+    <div id="container"></div>
+
+    <script>
+        let list = JSON.parse(localStorage.getItem('list')) || [];
+        let container = document.getElementById('container');
+
+        let h1 = document.createElement('h1');
+        h1.innerHTML = 'To do list';
+        container.appendChild(h1);
+
+        let input = document.createElement('input');
+        input.placeholder = 'add todo';
+        input.id = 'userInput';
+        container.appendChild(input);
+
+        let button = document.createElement('button');
+        button.innerHTML = 'add';
+        button.onclick = () => {
+            if (input.value.trim() !== "") {
+                list.push(input.value);
+                saveToLocalStorage();
+                input.value = "";
+                render();
+            }
+        };
+        container.appendChild(button);
+
+        const toDoListContainer = document.createElement('div');
+        container.appendChild(toDoListContainer);
+
+        function render() {
+            toDoListContainer.innerHTML = "";
+
+            list.forEach((toDo, i) => {
+                let toDoDiv = document.createElement('div');
+                toDoDiv.innerHTML = toDo + " ";
+
+                let delButton = document.createElement('button');
+                delButton.innerHTML = "delete";
+                delButton.style.backgroundColor = "blue";
+                delButton.style.color = "white";
+                delButton.onclick = () => {
+                    list.splice(i, 1);
+                    saveToLocalStorage();
+                    render();
+                };
+
+                let updateButton = document.createElement('button');
+                updateButton.innerHTML = "update";
+                updateButton.style.backgroundColor = "yellow";
+                updateButton.onclick = () => {
+                    // Replace the todo text with an input and save button
+                    toDoDiv.innerHTML = "";
+                    let newInput = document.createElement('input');
+                    newInput.value = toDo;
+                    toDoDiv.appendChild(newInput);
+
+                    let saveButton = document.createElement('button');
+                    saveButton.innerHTML = "save";
+                    saveButton.onclick = () => {
+                        if (newInput.value.trim() !== "") {
+                            list[i] = newInput.value;
+                            saveToLocalStorage();
+                            render();
+                        }
+                    };
+                    toDoDiv.appendChild(saveButton);
+                };
+
+                toDoDiv.appendChild(delButton);
+                toDoDiv.appendChild(updateButton);
+                toDoListContainer.appendChild(toDoDiv);
+            });
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem('list', JSON.stringify(list));
+        }
+
+        render();
+    </script>
+</body>
+
+</html>
